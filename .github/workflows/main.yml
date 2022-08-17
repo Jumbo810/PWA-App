@@ -27,20 +27,31 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '16.13'
+            # Deployment job
           
       - name: Install Dependencies
         run: npm install
-        
+          # Deployment job
+      
       - name: Vite Build
         run: npm run build -- --base=${{ github.event.repository.name }}
-        with:
-          source: ./
-          destination: ./_site
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
         
+
       - name: GitHub Pages action
         uses: peaceiris/actions-gh-pages@v3.7.3
+        
+          # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+        
         with:
           publish_dir: ./dist
           github_token: ${{ secrets.GITHUB_TOKEN }}
